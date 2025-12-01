@@ -11,11 +11,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // tắt CSRF để test bằng Postman
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll() // cho phép /auth/login và /auth/register truy cập tự do
-                .anyRequest().authenticated() // các API khác yêu cầu đăng nhập
-            );
+                .csrf(csrf -> csrf.disable()) // Tắt CSRF để test API bằng Postman
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**").permitAll() // Cho phép truy cập các API auth
+                        .anyRequest().authenticated() // Các API khác cần xác thực
+                )
+                .formLogin(login -> login.disable()) // Tắt form login mặc định
+                .httpBasic(basic -> basic.disable()); // Tắt Basic Auth
 
         return http.build();
     }

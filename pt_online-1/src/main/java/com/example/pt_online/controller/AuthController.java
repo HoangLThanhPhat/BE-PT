@@ -1,31 +1,36 @@
 package com.example.pt_online.controller;
 
-import com.example.pt_online.dto.*;
-import com.example.pt_online.model.User;
-import org.springframework.web.bind.annotation.*;
-import java.util.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.pt_online.dto.AuthResponse;
+import com.example.pt_online.dto.LoginRequest;
+import com.example.pt_online.dto.RegisterRequest;
+import com.example.pt_online.repository.UserRepository;
+import com.example.pt_online.security.JwtService;
+import com.example.pt_online.service.UserService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    private Map<String, User> users = new HashMap<>();
+	private final UserService userService;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
+    // Đăng ký tài khoản mới
     @PostMapping("/register")
     public AuthResponse register(@RequestBody RegisterRequest request) {
-        if (users.containsKey(request.getUsername())) {
-            return new AuthResponse("User already exists!");
-        }
-        users.put(request.getUsername(), new User(request.getUsername(), request.getPassword()));
-        return new AuthResponse("Register success!");
+        return userService.register(request);
     }
-
+    // Đăng nhập
     @PostMapping("/login")
     public AuthResponse login(@RequestBody LoginRequest request) {
-        User user = users.get(request.getUsername());
-        if (user != null && user.getPassword().equals(request.getPassword())) {
-            return new AuthResponse("Login success!");
-        }
-        return new AuthResponse("Invalid username or password!");
+        return userService.login(request);
     }
 }
